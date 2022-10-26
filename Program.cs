@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace ConsoleApp1
 {
@@ -7,7 +6,7 @@ namespace ConsoleApp1
     {
         static readonly string s_repoRootFolderPath = @"D:\Repos\OfficeDocs-Support-pr";
         static readonly string s_productRootFolderPath = @"Exchange";
-        static readonly int s_articleYearsOlderThan = 2;
+        static readonly int s_articleMonthsOlderThan = 28;
 
         static void Main()
         {
@@ -26,7 +25,7 @@ namespace ConsoleApp1
                 DateOnly flagDate = new(int.Parse(flagDateSegments[2]), int.Parse(flagDateSegments[0]), int.Parse(flagDateSegments[1]));
                 
                 // Check whether ms.date is older than specified years.
-                if (flagDate > DateOnly.FromDateTime(DateTime.Now.AddYears(-s_articleYearsOlderThan)))
+                if (flagDate > DateOnly.FromDateTime(DateTime.Now.AddMonths(-s_articleMonthsOlderThan)))
                     continue;
 
                 // Get title.
@@ -39,8 +38,10 @@ namespace ConsoleApp1
                 flaggedArticles.Add(ai);
             }
 
+            Console.Write($"{s_productRootFolderPath} articles older than {s_articleMonthsOlderThan} months\r\n\r\n");
+
             int counter = 1;
-            flaggedArticles.ForEach(x => x.PrintDetails(counter++));
+            flaggedArticles.OrderByDescending(x => x.FlagDate).ToList().ForEach(x => x.PrintDetails(counter++));
 
             Console.Write("\r\nPress any key to exit");
             Console.ReadKey();
